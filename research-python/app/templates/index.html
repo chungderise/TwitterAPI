@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>ツイッターAPI応用</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script>
+        function clear_result() {
+            $('.result').text('')
+            $('textarea').text('')
+        }
+
+        $(function() {
+            $("form textarea").keypress(function (e) {
+                if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+                    $('input[type=submit]').click();
+                    return false;
+                } else {
+                    return true;
+                }
+            });
+        });
+    </script>
+    <style type="text/css">
+        table thead tr
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>ツイッターAPI応用</h2>
+    <p>ツイッターにツイートした投稿がキーワードで探す。</p>
+    <form method="post">
+        <div class="form-group">
+            <label for="code">ここにキーワードを貼り付けてください:</label>
+            <textarea class="form-control" rows="3" name="code" id="code">{{code}}</textarea>
+            <input type="submit" value="送信" class="btn btn-success btn-lg" style="margin-top: 20px;">
+            <input type="reset" value="リセット" class="btn btn-default btn-lg" style="margin-top: 20px;"
+                   onclick="clear_result()">
+        </div>
+    </form>
+    {% if ispost %}
+    <div class="result">
+        <h4>投稿リスト:</h4>
+        {% if language %}
+            <p>結果数: {{language|length}}数</p>
+            <table class="table table-striped">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col" colspan="2">Name</th>
+                        <th scope="col">Text</th>
+                        <th scope="col">Location</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for i in language %}
+                {% set user = i['user'] %}
+                {% set entities = i['entities'] %}
+                {% set media = entities['media'] %}
+                    <tr>
+                        <td scope="row">{{ loop.index }}</td>
+                        <td><img src="{{ user['profile_image_url'] }}"></td>
+                        <td>{{ user['name'] }}</td>
+                        <td>
+                            {{ i['text'] }}<br /><br />
+
+                            {% if media %}
+                                {% for mi in media %}
+                                <a target="_blank" href="{{ mi['url'] }}">Link {{ loop.index }}</a>
+                                {% endfor %}
+                            {% endif %}
+                        </td>
+                        <td>{{ user['location'] }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            {% if error %}
+                <p style="color: red;font-weight: bold;">{{error}}</p>
+            {% endif %}
+        {% endif %}
+
+    </div>
+    {% endif %}
+</div>
+<div class="container" style="margin-top:20px;">
+    <p>Ⓒ ZOOOG,inc. All Rights Reserved.</p>
+</div>
+</body>
+</html>
