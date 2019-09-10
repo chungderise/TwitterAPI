@@ -7,6 +7,8 @@ import sys
 import os
 import xlwt
 import time
+import datetime
+
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(dir_path+"/../")
@@ -71,13 +73,18 @@ def check():
                 style = xlwt.XFStyle()
                 style.alignment.wrap = 1
 
-                for item in language:
+                #for item in language:
+                i = 0
+                while i < len(language):
+                    item = language[i]
                     num = num + 1
                     user = item['user']
                     ws.write(num, 0, format(user['name']), style)
                     ws.write(num, 1, format(item['text']), style)
                     ws.write(num, 2, format(user['location']), style)
-
+                    item["created_at2"] = datetime.datetime.strptime(item['created_at'], '%a %b %d %H:%M:%S %z %Y').timestamp()
+                    language[i] = item
+                    i = i + 1
                 millis = int(round(time.time() * 1000))
                 fileName = 'api_file_'+format(millis)+'.xls';
 
